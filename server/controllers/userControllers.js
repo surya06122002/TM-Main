@@ -218,22 +218,6 @@ export const getTeamList = async (req, res) => {
   }
 };
 
-export const getNotificationsList = async (req, res) => {
-  try {
-    const { userId } = req.user;
-
-    const notice = await Notice.find({
-      team: userId,
-      isRead: { $nin: [userId] },
-    }).populate("task", "title");
-
-    res.status(201).json(notice);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json({ status: false, message: error.message });
-  }
-};
-
 export const updateUserProfile = async (req, res) => {
   try {
     const { userId, isAdmin } = req.user;
@@ -265,33 +249,6 @@ export const updateUserProfile = async (req, res) => {
     } else {
       res.status(404).json({ status: false, message: "User not found" });
     }
-  } catch (error) {
-    console.log(error);
-    return res.status(400).json({ status: false, message: error.message });
-  }
-};
-
-export const markNotificationRead = async (req, res) => {
-  try {
-    const { userId } = req.user;
-
-    const { isReadType, id } = req.query;
-
-    if (isReadType === "all") {
-      await Notice.updateMany(
-        { team: userId, isRead: { $nin: [userId] } },
-        { $push: { isRead: userId } },
-        { new: true }
-      );
-    } else {
-      await Notice.findOneAndUpdate(
-        { _id: id, isRead: { $nin: [userId] } },
-        { $push: { isRead: userId } },
-        { new: true }
-      );
-    }
-
-    res.status(201).json({ status: true, message: "Done" });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ status: false, message: error.message });
