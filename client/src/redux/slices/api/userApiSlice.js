@@ -7,14 +7,6 @@ const initialState = {
     notifications: [],
 };
 
-// Async thunk to fetch notifications (example)
-export const fetchNotifications = createAsyncThunk(
-    'user/fetchNotifications',
-    async () => {
-        const response = await fetch('/api/notifications'); // Modify with your API
-        return response.json();
-    }
-);
 
 // Redux slice for the user
 const userSlice = createSlice({
@@ -24,11 +16,6 @@ const userSlice = createSlice({
         setEmail: (state, action) => {
             state.email = action.payload;
         },
-    },
-    extraReducers: (builder) => {
-        builder.addCase(fetchNotifications.fulfilled, (state, action) => {
-            state.notifications = action.payload;
-        });
     },
 });
 
@@ -79,23 +66,6 @@ export const userApiSlice = apiSlice.injectEndpoints({
             }),
         }),
 
-        getNotification: builder.query({
-            query: () => ({
-                url: `${USER_URL}/notifications`,
-                method: "GET",
-                credentials: 'include',
-            }),
-        }),
-
-        markNotiAsRead: builder.mutation({
-            query: (data) => ({
-                url: `${USER_URL}/read-noti?isReadType=${data.type}&id=${data?.id}`,
-                method: "PUT",
-                body: data,
-                credentials: 'include',
-            }),
-        }),
-
         changePassword: builder.mutation({
             query: (data) => ({
                 url: `${USER_URL}/change-password`,
@@ -113,8 +83,6 @@ export const { useUpdateUserMutation,
     useGetTeamListQuery,
     useDeleteUserMutation,
     useUserActionMutation,
-    useGetNotificationQuery,
-    useMarkNotiAsReadMutation,
     useChangePasswordMutation,
     useGetUserByIdQuery
 } = userApiSlice;
